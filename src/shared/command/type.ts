@@ -4,7 +4,7 @@ import { clientGuard } from '../user/guard';
 
 export interface CommandResponse {
   success: boolean
-  msg: string
+  msg?: string
 }
 
 export interface CommandSecurity {

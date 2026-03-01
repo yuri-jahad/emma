@@ -62,6 +62,10 @@ export class GuildService {
     return true
   }
 
+  get Guilds () {
+    return this.guilds
+  }
+
   async deleteChannel (guildId: string, channelId: string): Promise<boolean> {
     const guild = this.guilds.get(guildId)
     if (!guild || !guild.has(channelId)) {

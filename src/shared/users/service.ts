@@ -6,16 +6,16 @@ export class UsersService {
   private _users: Map<string, User> = new Map()
   private readonly dataManager = DataService.getInstance()
 
-  private constructor () {}
+  private constructor() {}
 
-  static getInstance (): UsersService {
+  static getInstance(): UsersService {
     if (!UsersService.instance) {
       UsersService.instance = new UsersService()
     }
     return UsersService.instance
   }
 
-  async load (): Promise<void> {
+  async load(): Promise<void> {
     const raw = await this.dataManager.loadData(USERS_DATA_PATH)
 
     if (!raw || !Array.isArray(raw)) {
@@ -29,15 +29,15 @@ export class UsersService {
     }
   }
 
-  async reload (): Promise<void> {
+  async reload(): Promise<void> {
     await this.load()
   }
 
-  get users (): User[] {
+  get users(): User[] {
     return Array.from(this._users.values())
   }
 
-  async addUser (user: User): Promise<void> {
+  async addUser(user: User): Promise<void> {
     if (this._users.has(user.id)) {
       return
     }
@@ -46,38 +46,36 @@ export class UsersService {
     await this.save()
   }
 
-  async setMute (authorId: string, targetId: string): Promise<boolean> {
-    if (authorId !== Bun.env.DISCORD_OWNER_ID) return false
-
+  async setMuteState(targetId: string, isMuted: boolean): Promise<boolean> {
     const user = this._users.get(targetId)
     if (!user) return false
 
-    if (user.muted) return true
+    if (user.muted === isMuted) return true
 
-    user.muted = true
+    user.muted = isMuted
     await this.save()
     return true
   }
 
-  getUser (id: string): User | undefined {
+  getUser(id: string): User | undefined {
     return this._users.get(id)
   }
 
-  getIdByName (name: string): string[] {
+  getIdByName(name: string): string[] {
     const ids: string[] = []
     for (const user of this._users.values()) {
-      if (user.username.toLowerCase() === name) {
+      if (user.username.toLowerCase() === name.toLowerCase()) {
         ids.push(user.id)
       }
     }
     return ids
   }
 
-  get count (): number {
+  get count(): number {
     return this._users.size
   }
 
-  private async save (): Promise<void> {
+  private async save(): Promise<void> {
     await this.dataManager.saveData(USERS_DATA_PATH, this.users)
   }
 }

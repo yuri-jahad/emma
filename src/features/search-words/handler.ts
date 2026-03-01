@@ -8,7 +8,7 @@ export function searchWordsHandler ({
   message,
   clientGuard
 }: CommandContext): CommandResponse {
-  const guard = clientGuard(bot, message.author.id, ['admin', 'staff'])
+  const guard = clientGuard(bot, message.author.id, ['user'])
 
   if (!guard.success && guard.msg) {
     return guard

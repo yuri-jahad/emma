@@ -20,16 +20,10 @@ export const clientGuard = (
     }
   }
 
-  const { role, muted, username } = user
+  const { role } = user
 
   if (role === 'owner') {
     return { success: true }
-  }
-  if (muted) {
-    return {
-      success: false,
-      msg: `Action impossible : ${username}, vos droits d'interaction avec le bot ont été suspendus.`
-    }
   }
 
   if (!allowedRoles.includes(role)) {
