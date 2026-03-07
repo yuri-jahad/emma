@@ -3,79 +3,138 @@ import type { User, USER_ROLE } from '@shared/user/type'
 
 export class UsersService {
   private static instance: UsersService | null = null
-  private _users: Map<string, User> = new Map()
+  private readonly userCache: Map<string, User> = new Map()
   private readonly dataManager = DataService.getInstance()
 
-  private constructor() {}
+  private constructor () {}
 
-  static getInstance(): UsersService {
+  static getInstance (): UsersService {
     if (!UsersService.instance) {
       UsersService.instance = new UsersService()
     }
     return UsersService.instance
   }
 
-  async load(): Promise<void> {
-    const raw = await this.dataManager.loadData(USERS_DATA_PATH)
+  async load (): Promise<void> {
+    const rawData = await this.dataManager.loadData(USERS_DATA_PATH)
 
-    if (!raw || !Array.isArray(raw)) {
+    if (!Array.isArray(rawData)) {
       await this.dataManager.saveData(USERS_DATA_PATH, [])
       return
     }
 
-    this._users.clear()
-    for (const user of raw) {
-      this._users.set(user.id, user)
+    this.userCache.clear()
+    for (const userData of rawData) {
+      if (!userData.list) userData.list = []
+      this.userCache.set(userData.id, userData)
     }
   }
 
-  async reload(): Promise<void> {
+  async reload (): Promise<void> {
     await this.load()
   }
 
-  get users(): User[] {
-    return Array.from(this._users.values())
+  get users (): User[] {
+    return Array.from(this.userCache.values())
   }
 
-  async addUser(user: User): Promise<void> {
-    if (this._users.has(user.id)) {
-      return
-    }
+  get count (): number {
+    return this.userCache.size
+  }
 
-    this._users.set(user.id, user)
+  getUser (userId: string): User | undefined {
+    return this.userCache.get(userId)
+  }
+
+  getList(userid: string) {
+    return this.userCache.get(userid)?.list
+  }
+
+  getIdByName (targetUsername: string): string[] {
+    const normalizedUsername = targetUsername.toLowerCase()
+    return this.users
+      .filter(user => user.username.toLowerCase() === normalizedUsername)
+      .map(user => user.id)
+  }
+
+  async addUser (newUser: User): Promise<void> {
+    if (this.userCache.has(newUser.id)) return
+
+    if (!newUser.list) newUser.list = []
+
+    this.userCache.set(newUser.id, newUser)
     await this.save()
   }
 
-  async setMuteState(targetId: string, isMuted: boolean): Promise<boolean> {
-    const user = this._users.get(targetId)
-    if (!user) return false
+  async setMuteState (
+    targetUserId: string,
+    shouldMute: boolean
+  ): Promise<boolean> {
+    const targetUser = this.userCache.get(targetUserId)
+    if (!targetUser) return false
 
-    if (user.muted === isMuted) return true
+    if (targetUser.muted === shouldMute) return true
 
-    user.muted = isMuted
+    targetUser.muted = shouldMute
     await this.save()
     return true
   }
 
-  getUser(id: string): User | undefined {
-    return this._users.get(id)
-  }
+  async addWords (
+    userId: string,
+    wordsToAdd: string[]
+  ): Promise<{ addedWords: string[]; existingWords: string[] }> {
+    const targetUser = this.getUser(userId)
+    if (!targetUser) return { addedWords: [], existingWords: [] }
+    if (!targetUser.list) targetUser.list = []
 
-  getIdByName(name: string): string[] {
-    const ids: string[] = []
-    for (const user of this._users.values()) {
-      if (user.username.toLowerCase() === name.toLowerCase()) {
-        ids.push(user.id)
+    const successfullyAddedWords: string[] = []
+    const alreadyExistingWords: string[] = []
+
+    for (const word of wordsToAdd) {
+      if (targetUser.list.includes(word)) {
+        alreadyExistingWords.push(word)
+      } else {
+        targetUser.list.push(word)
+        successfullyAddedWords.push(word)
       }
     }
-    return ids
+
+    if (successfullyAddedWords.length > 0) {
+      await this.save()
+    }
+
+    return {
+      addedWords: successfullyAddedWords,
+      existingWords: alreadyExistingWords
+    }
   }
 
-  get count(): number {
-    return this._users.size
+  async deleteWords (
+    userId: string,
+    wordsToRemove: string[]
+  ): Promise<string[]> {
+    const targetUser = this.getUser(userId)
+    if (!targetUser || !targetUser.list || targetUser.list.length === 0)
+      return []
+
+    const previousListLength = targetUser.list.length
+
+    targetUser.list = targetUser.list.filter(
+      existingWord => !wordsToRemove.includes(existingWord)
+    )
+    const successfullyDeletedWords = wordsToRemove.filter(
+      wordToRemove => !targetUser.list.includes(wordToRemove)
+    )
+
+    if (targetUser.list.length !== previousListLength) {
+      await this.save()
+    }
+
+    return successfullyDeletedWords
   }
 
-  private async save(): Promise<void> {
+  private async save (): Promise<void> {
     await this.dataManager.saveData(USERS_DATA_PATH, this.users)
   }
 }

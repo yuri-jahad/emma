@@ -17,7 +17,8 @@ export const reformatTextService = (
   firstCmd: string,
   result: string | { success: boolean; msg: string }
 ): string[] => {
-  const actualMsg = typeof result === 'object' && result !== null ? result.msg : String(result)
+  const actualMsg =
+    typeof result === 'object' && result !== null ? result.msg : String(result)
   if (!actualMsg || actualMsg.trim() === '') {
     return []
   }
@@ -102,3 +103,10 @@ export const COLORS_MESSAGE = {
     return `${cmd}\`\`\`ansi\n${colorCode}${text}\u001b[0m\n\`\`\``
   }
 } as const
+
+export function cleanAccents(text: string): string {
+  if (!text) return ''
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') 
+}

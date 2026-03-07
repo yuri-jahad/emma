@@ -1,5 +1,6 @@
 import { CommandService } from '@shared/command/service'
 import type { CommandResponse, CommandContext } from '@shared/command/type'
+import type { Message } from 'discord.js'
 
 export async function helpHandler ({
   message
@@ -31,7 +32,11 @@ export async function helpHandler ({
 
     helpMsg += `\`\`\``
 
-    await message.reply(helpMsg)
+    if (message.channel.isSendable()) {
+      await message.channel.send(helpMsg)
+    } else {
+      await message.reply(helpMsg)
+    }
 
     return {
       success: true,

@@ -1,6 +1,6 @@
 import { words } from '@core/dictionary/cache'
 import type { CommandResponse, CommandContext } from '@shared/command/type'
-import { searchWordsService } from '@features/search-words/service'
+import { searchWords } from '@shared/utils/array'
 
 export function searchWordsHandler ({
   args,
@@ -40,7 +40,7 @@ export function searchWordsHandler ({
       }
     }
 
-    const { results, total } = searchWordsService(
+    const { results, total } = searchWords(
       pattern,
       dictionary.data.words,
       limit

@@ -6,6 +6,7 @@ export const createUserFromMessage = (clientMessage: Message): User => {
     username: clientMessage.author.displayName,
     avatar: clientMessage.author.avatar,
     role: process.env.DISCORD_OWNER_ID === clientMessage.author.id ? 'owner' : 'user',
-    muted: false
+    muted: false, 
+    list: []
   }
 }

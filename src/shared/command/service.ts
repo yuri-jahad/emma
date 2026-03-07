@@ -6,6 +6,7 @@ import type { Message } from 'discord.js'
 import { reformatTextService } from '@shared/utils/text'
 import type { PhantaminumBot } from '@core/bot/phantaminum-bot'
 import { clientGuard } from '@shared/user/guard'
+import { cleanAccents } from '../utils/text';
 
 export class CommandService {
   private readonly cmds: Map<string, CommandModel> = new Map()
@@ -80,7 +81,7 @@ export class CommandService {
   ): Promise<string[] | undefined> {
     if (message.author.bot || !message.content) return undefined
 
-    const args = message.content.toLowerCase().trim().split(/\s+/)
+    const args = cleanAccents(message.content.toLowerCase()).trim().split(/\s+/)
     const firstCmd = args[0]
 
     if (!firstCmd) return undefined
