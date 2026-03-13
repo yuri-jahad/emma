@@ -5,7 +5,8 @@ export interface Surah {
   verseCount: string
   link: string
   content: string[]
-  surahNb: number;
+  contentFr: string[]
+  surahNb: number
 }
 export interface QuranStats {
     totalSurahs: number

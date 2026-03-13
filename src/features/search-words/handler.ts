@@ -73,13 +73,11 @@ export function searchWordsHandler ({
     const patternLabel = `${CYAN}${pattern.toUpperCase()}${RESET}`
     const header = `${BLUE}${total} ${total > 1 ? 'résultats trouvés -' : 'résultat trouvé -'} ${results.length} affiché(s)${RESET}\n\n`
 
-    // Format compact (cas normal) : une ligne avec crochets
     const singleContent = header + `${patternLabel} : [${highlightedWords.join(' ')}]`
     if (fitsInMessage(`\`\`\`ansi\n${singleContent.trimEnd()}\n\`\`\``)) {
       return [`\`\`\`ansi\n${singleContent.trimEnd()}\n\`\`\``]
     }
 
-    // Format multi-messages : lignes de 10 mots
     const rows: string[] = []
     for (let i = 0; i < highlightedWords.length; i += 10) {
       rows.push(highlightedWords.slice(i, i + 10).join(' '))

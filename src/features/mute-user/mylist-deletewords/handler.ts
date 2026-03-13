@@ -45,16 +45,14 @@ export async function deleteWordsHandler({
 
     const CYAN   = ANSI_COLORS.cyan
     const BLUE   = ANSI_COLORS.blue
-    const GREEN  = ANSI_COLORS.green
-    const YELLOW = ANSI_COLORS.yellow
     const RESET  = '\u001b[0m'
 
-    const deletedLabel = `${GREEN}${deletedWords.length} mot(s) supprimé(s)${RESET}\n`
+    const deletedLabel = `${CYAN}${deletedWords.length} mot(s) supprimé(s)${RESET}\n`
     const deletedList  = deletedWords.map(w => `${CYAN}${w.toUpperCase()}${RESET}`).join(' ')
     let output = `${deletedLabel}${deletedList}`
 
     if (notFoundWords.length > 0) {
-      const notFoundLabel = `${YELLOW}${notFoundWords.length} mot(s) introuvable(s)${RESET}\n`
+      const notFoundLabel = `${BLUE}${notFoundWords.length} mot(s) introuvable(s)${RESET}\n`
       const notFoundList  = notFoundWords.map(w => `${BLUE}${w.toUpperCase()}${RESET}`).join(' ')
       output += `\n\n${notFoundLabel}${notFoundList}`
     }

@@ -37,10 +37,11 @@ export async function showDefinitionsHandler({
     const { word_details, definitions } = result
     const displayDefs = definitions.slice(0, limit)
 
-    const sourceColor = COLORS_MESSAGE.colors['yellow']
+    const sourceColor = COLORS_MESSAGE.colors['blue']
     const defaultColor = COLORS_MESSAGE.colors['cyan']
 
-    const header = `\u001b[1m${definitions.length} ${
+    const headerColor = COLORS_MESSAGE.colors['blue']
+    const header = `${headerColor}\u001b[1m${definitions.length} ${
       definitions.length > 1 ? 'définitions trouvées -' : 'définition trouvée -'
     } ${displayDefs.length} affichée(s) (${word_details.word.toUpperCase()})\u001b[0m`
 
@@ -64,7 +65,6 @@ export async function showDefinitionsHandler({
       return [ansiMessage]
     }
 
-    // Chunking par définition si le message est trop long
     const messages: string[] = []
     let currentOutput = header + '\n\n'
 

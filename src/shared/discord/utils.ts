@@ -1,4 +1,3 @@
-// src/shared/discord/discord-utils.ts
 import type { Channel, TextBasedChannel } from 'discord.js';
 
 export const isTextChannel = (channel: Channel): channel is TextBasedChannel => {

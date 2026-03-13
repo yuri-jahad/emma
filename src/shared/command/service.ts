@@ -1,4 +1,3 @@
-// shared/command/command-registry.ts
 import type { CommandModel } from './type'
 import { join } from 'path'
 import { readdir } from 'node:fs/promises'

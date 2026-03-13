@@ -45,21 +45,19 @@ export async function muteHandler({
     }
   }
 
-  const MAGENTA = ANSI_COLORS.magenta
   const CYAN    = ANSI_COLORS.cyan
   const BLUE    = ANSI_COLORS.blue
-  const RED     = ANSI_COLORS.red
   const RESET   = '\u001b[0m'
 
   if (targetUser.muted) {
-    const header = `${MAGENTA}DÉJÀ SUSPENDU${RESET}\n`
-    const info   = `${BLUE}Utilisateur : ${CYAN}${targetUser.username}${RESET} ${BLUE}| Statut : ${RED}SUSPENDU${RESET}`
+    const header = `${CYAN}DÉJÀ SUSPENDU${RESET}\n`
+    const info   = `${BLUE}Utilisateur : ${CYAN}${targetUser.username}${RESET} ${BLUE}| Statut : ${CYAN}SUSPENDU${RESET}`
     return [`\`\`\`ansi\n${header}\n${info}\n\`\`\``]
   }
 
   await bot.users.setMuteState(targetId, true)
 
-  const header = `${MAGENTA}RESTRICTION APPLIQUÉE${RESET}\n`
-  const info   = `${BLUE}Utilisateur : ${CYAN}${targetUser.username}${RESET} ${BLUE}| Statut : ${RED}SUSPENDU${RESET}`
+  const header = `${CYAN}RESTRICTION APPLIQUÉE${RESET}\n`
+  const info   = `${BLUE}Utilisateur : ${CYAN}${targetUser.username}${RESET} ${BLUE}| Statut : ${CYAN}SUSPENDU${RESET}`
   return [`\`\`\`ansi\n${header}\n${info}\n\`\`\``]
 }

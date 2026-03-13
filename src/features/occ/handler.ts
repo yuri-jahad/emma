@@ -110,7 +110,6 @@ export function occHandler ({
       lines.push(`${sylLabel} : [${highlightedWords.join(' ')}]${ellipsis}`)
     }
 
-    // Chunking par ligne pour ne jamais couper un code ANSI en plein milieu
     const messages: string[] = []
     let currentLines: string[] = []
 

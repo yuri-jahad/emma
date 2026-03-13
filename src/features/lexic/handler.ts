@@ -2,7 +2,7 @@ import type { CommandResponse, CommandContext } from '@shared/command/type'
 import { definitionApiRepo } from '@features/show-definitions/repository'
 import type { DefinitionResult } from '@features/show-definitions/type'
 import { LexicService } from './service'
-import { COLORS_MESSAGE } from '@shared/utils/text'
+import { ANSI_COLORS, fitsInMessage } from '@shared/utils/text'
 
 const lexicService = new LexicService()
 
@@ -39,46 +39,99 @@ export async function lexicHandler({
       }
     }
 
-    const titleColor = COLORS_MESSAGE.colors['magenta']
-    const resetColor = '\u001b[0m'
-    const defaultColor = COLORS_MESSAGE.colors['blue']
-    const sourceColor = COLORS_MESSAGE.colors['yellow']
-    const relationColor = COLORS_MESSAGE.colors['blue']
+    const CYAN   = ANSI_COLORS.cyan
+    const BLUE   = ANSI_COLORS.blue
+    const RESET  = '\u001b[0m'
+    const SEP    = `${BLUE}${'─'.repeat(38)}${RESET}`
 
-    const actualWord = hasDefinition && defResult.word_details?.word 
-      ? defResult.word_details.word.toUpperCase() 
+    const actualWord = hasDefinition && defResult.word_details?.word
+      ? defResult.word_details.word.toUpperCase()
       : word.toUpperCase()
-      
-    let output = `${titleColor}LEXIQUE : ${actualWord}${resetColor}\n\n`
+
+    let output = `${CYAN}[ LEXIQUE · ${actualWord} ]${RESET}\n${SEP}`
 
     if (hasDefinition && firstDef) {
-      const text = firstDef.definition.length > 280 
-        ? firstDef.definition.substring(0, 280) + '...' 
+      const text = firstDef.definition.length > 300
+        ? firstDef.definition.substring(0, 300) + '...'
         : firstDef.definition
-        
-      const source = firstDef.source_name 
-        ? ` - ${sourceColor}${firstDef.source_name}${defaultColor}` 
+      const source = firstDef.source_name
+        ? `  ${BLUE}(${firstDef.source_name})${RESET}`
         : ''
-
-      output += `${titleColor}Définition :${resetColor}\n`
-      output += `${defaultColor}1. ${text}${source}\n\n`
+      output += `\n\n${CYAN}Définition${RESET}\n${BLUE}${text}${source}${RESET}`
     }
 
     if (synList.length > 0) {
-      const displaySyn = synList.slice(0, 15).join(', ')
-      const moreSyn = synList.length > 15 ? '...' : ''
-      output += `${titleColor}Synonymes (${synList.length}) :${resetColor}\n`
-      output += `${relationColor}${displaySyn}${moreSyn}${resetColor}\n\n`
+      const displayed = synList.slice(0, 15)
+      const more = synList.length > 15 ? ` ${BLUE}+${synList.length - 15}${RESET}` : ''
+      const synWords = displayed.map(s => `${CYAN}${s}${RESET}`).join(`  `)
+      output += `\n\n${CYAN}Synonymes ${BLUE}(${synList.length})${RESET}\n${synWords}${more}`
     }
 
     if (antList.length > 0) {
-      const displayAnt = antList.slice(0, 15).join(', ')
-      const moreAnt = antList.length > 15 ? '...' : ''
-      output += `${titleColor}Antonymes (${antList.length}) :${resetColor}\n`
-      output += `${relationColor}${displayAnt}${moreAnt}${resetColor}`
+      const displayed = antList.slice(0, 15)
+      const more = antList.length > 15 ? ` ${BLUE}+${antList.length - 15}${RESET}` : ''
+      const antWords = displayed.map(a => `${CYAN}${a}${RESET}`).join(`  `)
+      output += `\n\n${CYAN}Antonymes ${BLUE}(${antList.length})${RESET}\n${antWords}${more}`
     }
 
-    return [`\`\`\`ansi\n${output.trimEnd()}\n\`\`\``]
+    const ansiMessage = `\`\`\`ansi\n${output.trimEnd()}\n\`\`\``
+
+    if (fitsInMessage(ansiMessage)) {
+      return [ansiMessage]
+    }
+
+    const messages: string[] = []
+    const header = `${CYAN}[ LEXIQUE · ${actualWord} ]${RESET}\n${SEP}`
+    let current = header
+
+    if (hasDefinition && firstDef) {
+      const text = firstDef.definition.length > 300
+        ? firstDef.definition.substring(0, 300) + '...'
+        : firstDef.definition
+      const source = firstDef.source_name ? `  ${BLUE}(${firstDef.source_name})${RESET}` : ''
+      const block = `\n\n${CYAN}Définition${RESET}\n${BLUE}${text}${source}${RESET}`
+      const candidate = `\`\`\`ansi\n${current + block}\n\`\`\``
+      if (fitsInMessage(candidate)) {
+        current += block
+      } else {
+        messages.push(`\`\`\`ansi\n${current}\n\`\`\``)
+        current = block.trimStart()
+      }
+    }
+
+    if (synList.length > 0) {
+      const displayed = synList.slice(0, 15)
+      const more = synList.length > 15 ? ` ${BLUE}+${synList.length - 15}${RESET}` : ''
+      const synWords = displayed.map(s => `${CYAN}${s}${RESET}`).join(`  `)
+      const block = `\n\n${CYAN}Synonymes ${BLUE}(${synList.length})${RESET}\n${synWords}${more}`
+      const candidate = `\`\`\`ansi\n${current + block}\n\`\`\``
+      if (fitsInMessage(candidate)) {
+        current += block
+      } else {
+        messages.push(`\`\`\`ansi\n${current}\n\`\`\``)
+        current = block.trimStart()
+      }
+    }
+
+    if (antList.length > 0) {
+      const displayed = antList.slice(0, 15)
+      const more = antList.length > 15 ? ` ${BLUE}+${antList.length - 15}${RESET}` : ''
+      const antWords = displayed.map(a => `${CYAN}${a}${RESET}`).join(`  `)
+      const block = `\n\n${CYAN}Antonymes ${BLUE}(${antList.length})${RESET}\n${antWords}${more}`
+      const candidate = `\`\`\`ansi\n${current + block}\n\`\`\``
+      if (fitsInMessage(candidate)) {
+        current += block
+      } else {
+        messages.push(`\`\`\`ansi\n${current}\n\`\`\``)
+        current = block.trimStart()
+      }
+    }
+
+    if (current.trim()) {
+      messages.push(`\`\`\`ansi\n${current.trimEnd()}\n\`\`\``)
+    }
+
+    return messages
 
   } catch (error) {
     console.error(`[LexicHandler] Erreur critique avec le mot "${word}":`, error)

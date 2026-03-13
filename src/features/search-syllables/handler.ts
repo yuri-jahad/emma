@@ -57,13 +57,11 @@ export async function searchSyllablesHandler(
     const header = `${BLUE}${count} ${count > 1 ? 'résultats trouvés -' : 'résultat trouvé -'} ${syllablesArray.length} affiché(s) (${searchContext})${RESET}\n\n`
     const coloredSyllables = syllablesArray.map((s: string) => `${CYAN}${s}${RESET}`)
 
-    // Format compact (cas normal)
     const singleContent = header + coloredSyllables.join(' ')
     if (fitsInMessage(`\`\`\`ansi\n${singleContent.trimEnd()}\n\`\`\``)) {
       return [`\`\`\`ansi\n${singleContent.trimEnd()}\n\`\`\``]
     }
 
-    // Format multi-messages : lignes de 10 syllabes
     const rows: string[] = []
     for (let i = 0; i < coloredSyllables.length; i += 10) {
       rows.push(coloredSyllables.slice(i, i + 10).join(' '))

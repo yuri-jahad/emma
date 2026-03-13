@@ -134,6 +134,26 @@ export class UsersService {
     return successfullyDeletedWords
   }
 
+  async updateDefGame (
+    userId: string,
+    action: 'played' | 'won'
+  ): Promise<void> {
+    const user = this.userCache.get(userId)
+    if (!user) return
+
+    if (!user.defGame) {
+      user.defGame = { wins: 0, played: 0 }
+    }
+
+    if (action === 'played') {
+      user.defGame.played++
+    } else if (action === 'won') {
+      user.defGame.wins++
+    }
+
+    await this.save()
+  }
+
   private async save (): Promise<void> {
     await this.dataManager.saveData(USERS_DATA_PATH, this.users)
   }

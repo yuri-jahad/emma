@@ -31,21 +31,19 @@ export async function unmuteHandler ({
     }
   }
 
-  const MAGENTA = ANSI_COLORS.magenta
   const CYAN    = ANSI_COLORS.cyan
   const BLUE    = ANSI_COLORS.blue
-  const GREEN   = ANSI_COLORS.green
   const RESET   = '\u001b[0m'
 
   if (!targetUser.muted) {
-    const header = `${MAGENTA}DÉJÀ ACTIF${RESET}\n`
-    const info   = `${BLUE}Utilisateur : ${CYAN}${targetUser.username}${RESET} ${BLUE}| Statut : ${GREEN}ACTIF${RESET}`
+    const header = `${CYAN}DÉJÀ ACTIF${RESET}\n`
+    const info   = `${BLUE}Utilisateur : ${CYAN}${targetUser.username}${RESET} ${BLUE}| Statut : ${CYAN}ACTIF${RESET}`
     return [`\`\`\`ansi\n${header}\n${info}\n\`\`\``]
   }
 
   await bot.users.setMuteState(targetId, false)
 
-  const header = `${MAGENTA}DROITS RÉTABLIS${RESET}\n`
-  const info   = `${BLUE}Utilisateur : ${CYAN}${targetUser.username}${RESET} ${BLUE}| Statut : ${GREEN}ACTIF${RESET}`
+  const header = `${CYAN}DROITS RÉTABLIS${RESET}\n`
+  const info   = `${BLUE}Utilisateur : ${CYAN}${targetUser.username}${RESET} ${BLUE}| Statut : ${CYAN}ACTIF${RESET}`
   return [`\`\`\`ansi\n${header}\n${info}\n\`\`\``]
 }

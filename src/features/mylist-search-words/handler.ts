@@ -91,7 +91,6 @@ export function myListSearchWordsHandler({
 
     const patternLabel = hasPattern ? `${CYAN}${pattern.toUpperCase()}${RESET}` : null
 
-    // Format compact (cas normal)
     const singleBody = patternLabel
       ? `${patternLabel} : [${coloredWords.join(' ')}]`
       : coloredWords.join(' ')
@@ -100,7 +99,6 @@ export function myListSearchWordsHandler({
       return [`\`\`\`ansi\n${singleContent.trimEnd()}\n\`\`\``]
     }
 
-    // Format multi-messages : lignes de 10 mots
     const rows: string[] = []
     for (let i = 0; i < coloredWords.length; i += 10) {
       rows.push(coloredWords.slice(i, i + 10).join(' '))

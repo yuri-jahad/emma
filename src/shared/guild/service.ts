@@ -13,7 +13,6 @@ export interface GuildJsonData {
 
 export class GuildService {
   private static instance: GuildService | null = null
-  // La Map stocke maintenant l'ID de la guilde vers l'objet GuildData
   private readonly _guilds: Map<string, GuildData> = new Map()
   private readonly dataService: DataService = DataService.getInstance()
   private readonly path = join(import.meta.dir, '..', '..', 'data/guilds.json')
@@ -35,7 +34,6 @@ export class GuildService {
       return
     }
 
-    // Reconstruction de la Map avec les objets et les Sets
     for (const [guildId, data] of Object.entries(guildContent)) {
       this._guilds.set(guildId, {
         name: data.name,

@@ -1,13 +1,9 @@
-// Limite de rendu ANSI Discord : au-delà de cette longueur brute, les couleurs ne s'affichent plus
-// (codes d'échappement inclus dans le comptage)
 export const ANSI_MSG_LIMIT = 974
 
-// Supprime les codes d'échappement ANSI pour mesurer la longueur visible réelle
 export function ansiLen(str: string): number {
   return str.replace(/\u001b\[[0-9;]*m/g, '').length
 }
 
-// Vérifie qu'un message respecte la limite de rendu ANSI Discord (longueur brute, codes inclus)
 export function fitsInMessage(str: string): boolean {
   return str.length <= ANSI_MSG_LIMIT
 }

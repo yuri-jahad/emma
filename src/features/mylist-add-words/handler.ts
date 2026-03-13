@@ -34,18 +34,16 @@ export async function addWordsHandler({
 
     const CYAN   = ANSI_COLORS.cyan
     const BLUE   = ANSI_COLORS.blue
-    const GREEN  = ANSI_COLORS.green
-    const YELLOW = ANSI_COLORS.yellow
     const RESET  = '\u001b[0m'
 
     let output = ''
 
-    const addedLabel = `${GREEN}${addedWords.length} mot(s) ajouté(s)${RESET}\n`
+    const addedLabel = `${CYAN}${addedWords.length} mot(s) ajouté(s)${RESET}\n`
     const addedList  = addedWords.map(w => `${CYAN}${w.toUpperCase()}${RESET}`).join(' ')
     output += `${addedLabel}${addedList}`
 
     if (existingWords.length > 0) {
-      const existingLabel = `${YELLOW}${existingWords.length} mot(s) déjà présent(s)${RESET}\n`
+      const existingLabel = `${BLUE}${existingWords.length} mot(s) déjà présent(s)${RESET}\n`
       const existingList  = existingWords.map(w => `${BLUE}${w.toUpperCase()}${RESET}`).join(' ')
       output += `\n\n${existingLabel}${existingList}`
     }

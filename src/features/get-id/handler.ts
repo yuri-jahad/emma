@@ -27,12 +27,11 @@ export function getIdHandler ({
     }
   }
 
-  const MAGENTA = ANSI_COLORS.magenta
   const CYAN    = ANSI_COLORS.cyan
   const BLUE    = ANSI_COLORS.blue
   const RESET   = '\u001b[0m'
 
-  const header  = `${MAGENTA}IDENTIFIANT(S) TROUVÉ(S)${RESET}\n`
+  const header  = `${CYAN}IDENTIFIANT(S) TROUVÉ(S)${RESET}\n`
   const info    = `${BLUE}Cible : "${targetUsername}" | Résultats : ${userIds.length}${RESET}\n\n`
   const idLines = userIds.map(id => `${CYAN}• ${id}${RESET}`).join('\n')
 
