@@ -1,4 +1,4 @@
-# phantaminum-bot
+# emma-bot
 
 <p>
   <img src="src/assets/img/phantaminum.webp" width="400" height="500">
