@@ -22,7 +22,7 @@ export function occHandler ({
   const params = args.slice(1)
   let val1Str: string | undefined
   let val2Str: string | undefined
-  const DEFAULT_LIMIT = 10
+  const DEFAULT_LIMIT = 50
   const MAX_LIMIT = 50
   let limit = DEFAULT_LIMIT
 
