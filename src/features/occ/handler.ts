@@ -23,6 +23,7 @@ export function occHandler ({
   let val1Str: string | undefined
   let val2Str: string | undefined
   const DEFAULT_LIMIT = 20
+  const MAX_LIMIT = 50
   let limit = DEFAULT_LIMIT
 
   const user = bot.users.getUser(message.author.id)
@@ -32,7 +33,7 @@ export function occHandler ({
     if (p.toLowerCase().startsWith('l')) {
       if (isElevated) {
         const parsedLimit = parseInt(p.slice(1), 10)
-        if (!isNaN(parsedLimit)) limit = parsedLimit
+        if (!isNaN(parsedLimit)) limit = Math.min(parsedLimit, MAX_LIMIT)
       }
     } else {
       if (!val1Str) val1Str = p
