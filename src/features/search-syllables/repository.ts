@@ -50,7 +50,7 @@ export const searchSyllablesRepository = async (
   
   const message =
     totalFound > 0
-      ? `(${totalFound})\n${syllables.slice(0, 400).join(' ')}`
+      ? `(${totalFound})\n${syllables.slice(0, 50).join(' ')}`
       : 'Aucune syllabe n\'a été trouvée.'
 
   return { status: 'success', message }
