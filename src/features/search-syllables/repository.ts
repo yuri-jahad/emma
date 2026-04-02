@@ -33,7 +33,7 @@ export const searchSyllablesRepository = async (
     let matchPattern = true
 
     if (hasCount) {
-      matchCount = count === parsedCount
+      matchCount = count === (parsedCount as number) * 2
     }
 
     if (hasPattern && regexPattern) {

@@ -10,12 +10,8 @@ const dictionarySet = new Set(words.data.words.map(w => cleanAccents(w.toLowerCa
 export async function defGameReplyHandler({
   args,
   bot,
-  message,
-  clientGuard
+  message
 }: CommandContext): Promise<CommandResponse | string[]> {
-  const guard = clientGuard(bot, message.author.id, ['user'])
-  if (!guard.success) return guard
-
   const channelId = message.channelId
   const session   = sessions.get(channelId)
 
@@ -66,7 +62,7 @@ export async function defGameReplyHandler({
   // ─── Jeu de syllabes ─────────────────────────────────────────────────────
 
   if (session.type === 'syl') {
-    const containsSyllable = answer.includes(session.syllable)
+    const containsSyllable = answer.includes(cleanAccents(session.syllable))
     const inDictionary     = dictionarySet.has(answer)
 
     if (!containsSyllable || !inDictionary) {

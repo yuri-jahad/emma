@@ -47,7 +47,7 @@ export async function searchSyllablesHandler(
 
     const searchContext = [
       syllablePattern?.toUpperCase(),
-      occurrenceCount ? `${occurrenceCount} SYLLABES` : ''
+      occurrenceCount ? `${occurrenceCount} SOLUTIONS` : ''
     ].filter(Boolean).join(' - ')
 
     const CYAN = ANSI_COLORS.cyan

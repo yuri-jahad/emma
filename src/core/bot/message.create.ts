@@ -4,6 +4,7 @@ import { sleep } from 'bun'
 import { createUserFromMessage } from '@shared/user/service'
 import { reformatTextService } from '@shared/utils/text'
 import { guildGuard } from '@shared/guild/guard'
+import { sessions } from '@features/def-game/session'
 
 export const handleMessageCreate = async (
   message: Message,
@@ -11,7 +12,8 @@ export const handleMessageCreate = async (
 ): Promise<void> => {
   if (message.author.bot) return
 
-  const isAuthorizedContext = guildGuard(message, bot)
+  const hasActiveGame = sessions.has(message.channelId)
+  const isAuthorizedContext = hasActiveGame || guildGuard(message, bot)
   if (!isAuthorizedContext) return
 
   const currentUser = bot.users.getUser(message.author.id)

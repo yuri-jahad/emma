@@ -46,7 +46,7 @@ export function startRoundTimers (
 
   const hintTimer = setTimeout(async () => {
     if (sessions.get(channelId) !== session) return
-    const hint = words.data.words.find(w => cleanAccents(w.toLowerCase()).includes(syllable))
+    const hint = words.data.words.find(w => cleanAccents(w.toLowerCase()).includes(cleanAccents(syllable)))
     const hintContent = hint
       ? `${CYAN}[ INDICE ]${RESET}\n\n` +
         `${BLUE}Un mot valide fait${RESET} ${CYAN}${hint.length} lettre${hint.length > 1 ? 's' : ''}${RESET} ` +
@@ -60,7 +60,7 @@ export function startRoundTimers (
     await bot.users.updateDefGame(starterId, 'played')
 
     const examples = words.data.words
-      .filter(w => cleanAccents(w.toLowerCase()).includes(syllable))
+      .filter(w => cleanAccents(w.toLowerCase()).includes(cleanAccents(syllable)))
       .slice(0, 5)
       .map(w => `${CYAN}${w.toUpperCase()}${RESET}`)
       .join(', ')
@@ -96,7 +96,7 @@ export async function advanceRound (
   clearTimeout(session.gameTimer)
 
   const nextSyl    = session.queue.shift()!
-  const nextCount  = words.data.occurrences[nextSyl] ?? 0
+  const nextCount  = (words.data.occurrences[nextSyl] ?? 0) / 2
 
   session.syllable      = nextSyl
   session.solutionCount = nextCount
@@ -142,11 +142,7 @@ export async function sylGameHandler ({
   args,
   bot,
   message,
-  clientGuard
 }: CommandContext): Promise<CommandResponse | string[]> {
-  const guard = clientGuard(bot, message.author.id, ['user'])
-  if (!guard.success) return guard
-
   const channelId = message.channelId
   if (sessions.has(channelId)) {
     return { success: false, msg: "Une partie est déjà en cours dans ce salon. Utilise `.rep <mot>` pour répondre ou `.skip` pour passer !" }
@@ -171,7 +167,7 @@ export async function sylGameHandler ({
   // Filtrer le pool selon les critères
   const pool = Object.entries(occurrences)
     .filter(([, count]) =>
-      exactSolutions !== undefined ? count === exactSolutions : count >= MIN_SOLUTIONS
+      exactSolutions !== undefined ? count === exactSolutions * 2 : count >= MIN_SOLUTIONS * 2
     )
     .map(([syl]) => syl)
 
@@ -184,7 +180,7 @@ export async function sylGameHandler ({
 
   const picked     = shuffle(pool).slice(0, totalRounds)
   const firstSyl   = picked[0]!
-  const firstCount = occurrences[firstSyl] ?? 0
+  const firstCount = (occurrences[firstSyl] ?? 0) / 2
   const queue      = picked.slice(1)
   const starterId  = message.author.id
   const channel    = message.channel as SendableChannel
